@@ -63,6 +63,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UCurveFloat* RadiusVsVelocity;
 
+	UPROPERTY(EditAnywhere)
+	float TeleportProjectileRadius = 10.f;
+
+	UPROPERTY(EditAnywhere)
+	float TeleportProjectileSpeed = 1000.f;
+
+	UPROPERTY(EditAnywhere)
+	float TeleportSimulationTime = 10.f;
+
 	// Movement functions
 	void MoveForward(float val);
 	void MoveRight(float val);

@@ -14,6 +14,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Curves/CurveFloat.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "TimerManager.h"
@@ -78,15 +79,26 @@ bool AVRCharacter::FindTeleportDestination(FVector& OutLocation)
 {
 	FVector TraceStart = RightController->GetComponentLocation();
 	FVector Look = RightController->GetForwardVector();
-	Look.RotateAngleAxis(30, RightController->GetRightVector());
-	FVector TraceEnd =  TraceStart + Look * MaxTeleportDistance;
+	
 
-	FHitResult HitResult;
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility);
+	FPredictProjectilePathParams PredictParams(
+		TeleportProjectileRadius,
+		TraceStart,
+		Look * TeleportProjectileSpeed,
+		TeleportSimulationTime,
+		ECC_Visibility,
+		this
+		);
+	PredictParams.DrawDebugType = EDrawDebugTrace::ForOneFrame;
+	PredictParams.bTraceComplex = true;
+	FPredictProjectilePathResult PredictResult;
+
+	
+	bool bHit = UGameplayStatics::PredictProjectilePath(this, PredictParams, PredictResult);
 	if(!bHit) return false;
 
 	FNavLocation NavLocation;
-	bool bOnNavMesh = UNavigationSystemV1::GetNavigationSystem(GetWorld())->ProjectPointToNavigation(HitResult.Location, NavLocation, TeleportProjectionExtent);
+	bool bOnNavMesh = UNavigationSystemV1::GetNavigationSystem(GetWorld())->ProjectPointToNavigation(PredictResult.HitResult.Location, NavLocation, TeleportProjectionExtent);
 	if(!bOnNavMesh) return false;
 
 	OutLocation = NavLocation.Location;
@@ -138,8 +150,6 @@ FVector2D AVRCharacter::GetBlinkerCenter()
 	{
 		WorldStationaryLocation = Camera->GetComponentLocation() - MovementDirection * 1000;
 	}
-	
-	
 	
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	if (PC == nullptr)
