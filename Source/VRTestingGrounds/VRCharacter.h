@@ -71,6 +71,7 @@ protected:
 	bool FindTeleportDestination(FVector &OutLocation);
 	void UpdateDestinationMarker();
 	void UpdateBlinkers();
+	FVector2D GetBlinkerCenter();
 	void BeginTeleport();
 	void FinishTeleport();
 	void StartFade(float FromAlpha, float ToAlpha);

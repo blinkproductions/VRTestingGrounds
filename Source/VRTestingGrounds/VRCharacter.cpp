@@ -13,6 +13,7 @@
 #include "Components/PostProcessComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Curves/CurveFloat.h"
+#include "GameFramework/PlayerController.h"
 #include "NavigationSystem.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "TimerManager.h"
@@ -116,6 +117,44 @@ void AVRCharacter::UpdateBlinkers()
 	float Radius = RadiusVsVelocity->GetFloatValue(Speed);
 
 	BlinkerMaterialInstance->SetScalarParameterValue("Radius", Radius);
+
+	FVector2D Center = GetBlinkerCenter();
+	BlinkerMaterialInstance->SetVectorParameterValue("Center",FLinearColor(Center.X, Center.Y, 0));
+}
+
+FVector2D AVRCharacter::GetBlinkerCenter()
+{
+	FVector MovementDirection = GetVelocity().GetSafeNormal();
+	if (MovementDirection.IsNearlyZero())
+	{
+		return FVector2D(.5f,.5f);
+	}
+
+	FVector WorldStationaryLocation;
+	if (FVector::DotProduct(Camera->GetForwardVector(), MovementDirection) > 0)
+	{
+		WorldStationaryLocation = Camera->GetComponentLocation() + MovementDirection * 1000;
+	} else
+	{
+		WorldStationaryLocation = Camera->GetComponentLocation() - MovementDirection * 1000;
+	}
+	
+	
+	
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC == nullptr)
+	{
+		return FVector2D(.5f,.5f);
+	}
+	FVector2D ScreenLocation;
+	PC->ProjectWorldLocationToScreen(WorldStationaryLocation, ScreenLocation);
+
+	int32 SizeX, SizeY;
+	PC->GetViewportSize(SizeX, SizeY);
+	ScreenLocation.X = ScreenLocation.X / SizeX;
+	ScreenLocation.Y = ScreenLocation.Y / SizeY;
+
+	return ScreenLocation;
 }
 
 void AVRCharacter::BeginTeleport()
