@@ -41,6 +41,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* DestinationMarker;
 
+	UPROPERTY(VisibleAnywhere)
+	class USplineComponent* TeleportPath;
+
 	UPROPERTY()
 	class UPostProcessComponent* PostProcessComponent;
 
@@ -70,16 +73,17 @@ protected:
 	float TeleportProjectileSpeed = 1000.f;
 
 	UPROPERTY(EditAnywhere)
-	float TeleportSimulationTime = 10.f;
+	float TeleportSimulationTime = 1.f;
 
 	// Movement functions
 	void MoveForward(float val);
 	void MoveRight(float val);
 
 	// Helper functions
-	bool FindTeleportDestination(FVector &OutLocation);
+	bool FindTeleportDestination(TArray<FVector> &OutPath, FVector &OutLocation);
 	void UpdateDestinationMarker();
 	void UpdateBlinkers();
+	void UpdateSpline(const TArray<FVector> &OutPath);
 	FVector2D GetBlinkerCenter();
 	void BeginTeleport();
 	void FinishTeleport();
