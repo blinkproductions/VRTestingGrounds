@@ -50,6 +50,15 @@ protected:
 	UPROPERTY()
 	class UMaterialInstanceDynamic* BlinkerMaterialInstance;
 
+	UPROPERTY(EditAnywhere)
+	TArray<class USplineMeshComponent*> TeleportPathMeshPool;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UStaticMesh* TeleportArchMesh;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UMaterialInterface* TeleportArchMaterial;
+
 	// Variables
 	UPROPERTY(EditAnywhere)
 	float MaxTeleportDistance = 1000.f;
@@ -83,6 +92,7 @@ protected:
 	bool FindTeleportDestination(TArray<FVector> &OutPath, FVector &OutLocation);
 	void UpdateDestinationMarker();
 	void UpdateBlinkers();
+	void DrawTeleportPath(const TArray<FVector> &OutPath);
 	void UpdateSpline(const TArray<FVector> &OutPath);
 	FVector2D GetBlinkerCenter();
 	void BeginTeleport();
