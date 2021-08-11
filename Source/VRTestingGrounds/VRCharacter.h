@@ -29,11 +29,11 @@ protected:
 	UPROPERTY()
 	class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere)
-	class UMotionControllerComponent* LeftController;
+	UPROPERTY()
+	class AHandController* LeftController;
 
-	UPROPERTY(VisibleAnywhere)
-	class UMotionControllerComponent* RightController;
+	UPROPERTY()
+	class AHandController* RightController;
 
 	UPROPERTY()
 	class USceneComponent* VRRoot;
@@ -59,7 +59,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	class UMaterialInterface* TeleportArchMaterial;
 
-	// Variables
+	// Configuration Variables
 	UPROPERTY(EditAnywhere)
 	float MaxTeleportDistance = 1000.f;
 
@@ -83,6 +83,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float TeleportSimulationTime = 1.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AHandController> HandControllerClass;
 
 	// Movement functions
 	void MoveForward(float val);

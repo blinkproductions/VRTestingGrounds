@@ -2,15 +2,10 @@
 
 
 #include "VRCharacter.h"
-
-#include <concrt.h>
-
-
 #include "Camera/CameraComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/PostProcessComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
@@ -20,8 +15,9 @@
 #include "NavigationSystem.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "TimerManager.h"
-#include "MotionControllerComponent.h"
-#include "PropertyEditorModule.h"
+#include "HandController.h"
+
+
 
 
 // Sets default values
@@ -36,21 +32,11 @@ AVRCharacter::AVRCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(VRRoot);
 
-	LeftController = CreateDefaultSubobject<UMotionControllerComponent>("LeftController");
-	LeftController->SetupAttachment(VRRoot);
-	LeftController->SetTrackingSource(EControllerHand::Left);
-	LeftController->bDisplayDeviceModel = true;
-
-	RightController = CreateDefaultSubobject<UMotionControllerComponent>("RightController");
-	RightController->SetupAttachment(VRRoot);
-	RightController->SetTrackingSource(EControllerHand::Right);
-	RightController->bDisplayDeviceModel = true;
-
 	DestinationMarker = CreateDefaultSubobject<UStaticMeshComponent>("DestinationMarker");
 	DestinationMarker->SetupAttachment(GetRootComponent());
 
 	TeleportPath = CreateDefaultSubobject<USplineComponent>("TeleportPath");
-	TeleportPath->SetupAttachment(RightController);
+	TeleportPath->SetupAttachment(VRRoot);
 
 	PostProcessComponent = CreateDefaultSubobject<UPostProcessComponent>("PostProcessComponent");
 	PostProcessComponent->SetupAttachment(GetRootComponent());
@@ -70,7 +56,22 @@ void AVRCharacter::BeginPlay()
 		PostProcessComponent->AddOrUpdateBlendable(BlinkerMaterialInstance);
 	}
 
+	//..Casting HandControllerClass subclass
+	LeftController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
+	if (LeftController != nullptr)
+	{
+		LeftController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		LeftController->SetHand(EControllerHand::Left);
+		LeftController->SetOwner(this);
+	}
 	
+	RightController = GetWorld()->SpawnActor<AHandController>(HandControllerClass);
+	if (RightController != nullptr)
+	{
+		RightController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		RightController->SetHand(EControllerHand::Right);
+		RightController->SetOwner(this);
+	}
 }
 
 void AVRCharacter::MoveForward(float val)
@@ -85,8 +86,8 @@ void AVRCharacter::MoveRight(float val)
 
 bool AVRCharacter::FindTeleportDestination(TArray<FVector> &OutPath, FVector& OutLocation)
 {
-	FVector TraceStart = RightController->GetComponentLocation();
-	FVector Look = RightController->GetForwardVector();
+	FVector TraceStart = RightController->GetActorLocation();
+	FVector Look = RightController->GetActorForwardVector();
 	
 
 	FPredictProjectilePathParams PredictParams(
