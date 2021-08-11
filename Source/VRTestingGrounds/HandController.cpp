@@ -2,6 +2,7 @@
 
 
 #include "HandController.h"
+#include "Components/SphereComponent.h"
 #include "MotionControllerComponent.h"
 
 // Sets default values
@@ -13,6 +14,10 @@ AHandController::AHandController()
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>("MotionController");
 	SetRootComponent(MotionController);
 	MotionController->bDisplayDeviceModel = true;
+
+	SphereCollision = CreateDefaultSubobject<USphereComponent>("SphereComponent");
+	SphereCollision->SetupAttachment(GetRootComponent());
+	SphereCollision->SetCollisionResponseToAllChannels(ECR_Overlap);
 
 }
 

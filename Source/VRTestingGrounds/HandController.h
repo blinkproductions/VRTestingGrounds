@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	class UMotionControllerComponent* MotionController;
 
+	UPROPERTY(VisibleAnywhere)
+	class USphereComponent* SphereCollision;
+
 	// Callbacks
 	UFUNCTION()
 	void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
