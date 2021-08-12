@@ -21,6 +21,10 @@ public:
 
 	// functions
 	void SetHand(EControllerHand Hand) { MotionController->SetTrackingSource(Hand); }
+	void PairController(AHandController* Controller);
+
+	void Grip();
+	void Release();
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,6 +36,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* SphereCollision;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UHapticFeedbackEffect_Base* HapticEffect;
 
 	// Callbacks
 	UFUNCTION()
@@ -45,6 +52,10 @@ protected:
 
 	// State variables
 	bool bCanClimb = false;
+	bool bIsClimbing = false;
+	FVector ClimbingStartLocation;
+
+	AHandController* OtherController;
 
 	
 };

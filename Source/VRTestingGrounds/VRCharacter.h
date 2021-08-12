@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "HandController.h"
 #include "GameFramework/Character.h"
 #include "VRCharacter.generated.h"
 
@@ -90,6 +92,10 @@ protected:
 	// Movement functions
 	void MoveForward(float val);
 	void MoveRight(float val);
+	void GripLeft() { LeftController->Grip(); }
+	void ReleaseLeft() { LeftController->Release(); }
+	void GripRight() { RightController->Grip(); }
+	void ReleaseRight() { RightController->Release(); }
 
 	// Helper functions
 	bool FindTeleportDestination(TArray<FVector> &OutPath, FVector &OutLocation);
